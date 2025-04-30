@@ -1,0 +1,47 @@
+name: ethan
+
+services:
+    database:
+        image: postgres:17
+        volumes:
+            - data:/var/lib/postgresql/data:rw
+        environment:
+            POSTGRES_USER: cu
+            POSTGRES_PASSWORD: cu
+            POSTGRES_DB: cu
+        healthcheck:
+            test: pg_isready -U cu -d cu || exit 1
+            interval: 1s
+            timeout: 1s
+
+    cu:
+        depends_on:
+            database:
+                condition: service_healthy
+        build:
+            context: ../servers/cu
+            dockerfile_inline: |
+                FROM node:22
+                WORKDIR /app
+                COPY package.json package-lock.json .
+                RUN npm install --ignore-engines --omit=dev
+                COPY src ./src
+        command:
+            - npm
+            - run
+            - start
+        environment:
+            NODE_CONFIG_ENV: development
+            DEFAULT_LOG_LEVEL: "info"
+            MEM_MONITOR_INTERVAL: 2147483647 # 2^31 - 1
+            DB_URL: postgres://cu:cu@database/cu?sslmode=disable
+            WALLET_FILE: /app/wallet.json
+            PROCESS_CHECKPOINT_TRUSTED_OWNERS: fcoN_xJeisVsPXA-trzVAuIiqO3ydLQxM-L4XbrQKzY,IcJpPOibPvhqurG92Sp6tDMnSZuS6Huo4peCIyCzaPE,DDyQNDRVdrNRZkU8Y4qOn6V-y_BI7u1zpPpAoWhy3N0
+        volumes:
+            - /Users/michael/ao/me/ao-localnet/wallets/ao-wallet.json:/app/wallet.json:ro
+        ports:
+            - 127.0.0.1:6363:6363
+
+volumes:
+    data:
+        driver: local
