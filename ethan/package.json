@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@permaweb/aoconnect": "^0.0.82"
+  }
+}
