@@ -175,7 +175,7 @@ export function evaluateWith ({
       .chain((wasmInstance) =>
         of(wasmInstance)
           .map((wasmInstance) => {
-            logger('Evaluating message "%s" to process "%s"', name, processId)
+            logger.warn('Evaluating message "%s" to process "%s"', name, processId)
             return wasmInstance
           })
           .chain(fromPromise(async (wasmInstance) =>

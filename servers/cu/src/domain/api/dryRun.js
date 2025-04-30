@@ -175,7 +175,7 @@ export function dryRunWith (env) {
     // Check if we have a cached result for this exact request
     const cachedResult = dryRunResultsCache.get(cacheKey)
     if (cachedResult) {
-      logger.info('Dry run cache   [HIT]   for process "%s"', processId)
+      logger.warn('Dry run cache   [HIT]   for process "%s"', processId)
       return Resolved(cachedResult)
     }
 
@@ -183,14 +183,14 @@ export function dryRunWith (env) {
     if (pendingDryRuns.has(cacheKey)) {
       const promise = pendingDryRuns.get(cacheKey)
       promise.queued += 1
-      logger.info('Dry run queue [ENQUEUE] for process "%s" count: %i', processId, promise.queued)
+      logger.warn('Dry run queue [ENQUEUE] for process "%s" count: %i', processId, promise.queued)
       return of(promise)
     }
 
     let resolve, reject
     const promise = new Promise((_resolve, _reject) => (resolve = _resolve, reject = _reject))
     promise.queued = 1
-    logger.info('Dry run cache  [MISS]   for process "%s" count: %i', processId, promise.queued)
+    logger.warn('Dry run cache  [MISS]   for process "%s" count: %i', processId, promise.queued)
     // immediately start enqueueing
     pendingDryRuns.set(cacheKey, promise)
 
@@ -263,7 +263,7 @@ export function dryRunWith (env) {
           // logging
           const promise = pendingDryRuns.get(cacheKey);
           if (promise.queued > 1) {
-            logger.info('Dry run queue [REJECT]  for process "%s" count: %i', processId, promise.queued)
+            logger.warn('Dry run queue [REJECT]  for process "%s" count: %i', processId, promise.queued)
           }
           // stop enqueueing
           pendingDryRuns.delete(cacheKey)
@@ -277,7 +277,7 @@ export function dryRunWith (env) {
           // logging
           const promise = pendingDryRuns.get(cacheKey);
           if (promise.queued > 1) {
-            logger.info('Dry run queue [RESOLVE] for process "%s" count: %i', processId, promise.queued)
+            logger.warn('Dry run queue [RESOLVE] for process "%s" count: %i', processId, promise.queued)
           }
           // stop enqueueing
           pendingDryRuns.delete(cacheKey)
